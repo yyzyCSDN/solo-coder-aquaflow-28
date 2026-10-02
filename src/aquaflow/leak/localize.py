@@ -3,9 +3,15 @@ from math import log1p
 @dataclass(frozen=True)
 class Signal:
     sensor:str;pipe:str;drop:float;acoustic:float;night_delta:float
+def _score(s:Signal):
+    return max(0,s.drop)*.5+max(0,s.acoustic)*1.6+log1p(max(0,s.night_delta))*2
 def rank(rows:list[Signal]):
-    scores={}
+    per_sensor={}
     for r in rows:
-        s=max(0,r.drop)*.5+max(0,r.acoustic)*1.6+log1p(max(0,r.night_delta))*2
-        scores[r.pipe]=max(scores.get(r.pipe,0),s)
-    return sorted(scores.items(),key=lambda x:(-x[1],x[0]))
+        sensors=per_sensor.setdefault(r.pipe,{})
+        s=_score(r)
+        if r.sensor not in sensors or s>sensors[r.sensor]:
+            sensors[r.sensor]=s
+    scores=[(pipe,sum(by_sensor.values()),len(by_sensor)) for pipe,by_sensor in per_sensor.items()]
+    scores.sort(key=lambda x:-x[1])
+    return scores

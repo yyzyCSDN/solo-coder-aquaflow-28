@@ -93,7 +93,7 @@ def leak_dispatch(signals: list[Signal], available_crews: int, minimum_score: fl
     if available_crews < 0:
         raise ValueError("negative crew count")
     ranked = rank_leaks(signals)
-    return [pipe for pipe, score in ranked if score >= minimum_score][:available_crews]
+    return [pipe for pipe, score, _sensors in ranked if score >= minimum_score][:available_crews]
 
 
 def escalation_deadline(opened: datetime, priority: int) -> datetime:
