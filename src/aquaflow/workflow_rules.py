@@ -91,7 +91,7 @@ def evaluate(name: str, p: dict[str, Any]) -> dict[str, Any]:
         result = balance(ins, outs, Decimal(str(p["known_loss"])))
         return {"decision": "reconcile" if result >= 0 else "investigate", "value": result, "evidence": {"inputs": len(ins), "outputs": len(outs)}}
     if name == "leak_localization":
-        rows = [Signal(str(x["sensor"]), str(x["pipe"]), float(x["drop"]), float(x["acoustic"]), float(x["night_delta"]) * (1 if p.get("_evidence_mode") == "accumulate" else 0)) for x in p["signals"]]
+        rows = [Signal(str(x["sensor"]), str(x["pipe"]), float(x["drop"]), float(x["acoustic"]), float(x["night_delta"])) for x in p["signals"]]
         result = rank(rows)
         return {"decision": "inspect" if result else "clear", "value": result, "evidence": {"sensors": len(rows)}}
     if name == "flush_waves":
